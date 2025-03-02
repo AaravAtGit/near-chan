@@ -1,13 +1,13 @@
 {
   "name": "near-chan",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "An AI assistant for NEAR blockchain.",
   "category": "agent",
   "tags": [],
   "details": {
     "agent": {
       "defaults": {
-        "model": "qwen2p5-72b-instruct",
+        "model": "llama-v3p3-70b-instruct",
         "model_provider": "fireworks",
         "model_temperature": 1.0,
         "model_max_tokens": 16384

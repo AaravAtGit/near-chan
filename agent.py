@@ -1,7 +1,7 @@
 from nearai.agents.environment import Environment
 from functions import send_tokens, get_balance, get_test_tokens
 import asyncio
-
+import json
 
 def send_tokens_doc(address, amount):
     """
@@ -47,18 +47,38 @@ def get_testnet_tokens(recipient, amount):
 
 
 
+VECTOR_STORE_ID = "vs_cb8d5537f64d4f4aa6cbc95f"
 
 
 def run(env: Environment):
+
+    # RAG IMPLIMENTATION
+    user_query = env.list_messages()[-1]["content"]
+    vector_results = env.query_vector_store(VECTOR_STORE_ID, user_query)     # Query the Vector Store
+    docs = [{"file": res["chunk_text"]} for res in vector_results[:6]]
+
+
+    # Tools implimentation
     tool_registry = env.get_tool_registry(new=True)
-    # Define tools
     tool_registry.register_tool(send_tokens_doc)
     tool_registry.register_tool(get_bal)
     tool_registry.register_tool(get_testnet_tokens)
 
-    
+    prompt = [
+        {
+            "role": "user query",
+            "content": user_query,
+        },
+        {
+            "role": "documentation",
+            "content": json.dumps(docs),
+        },
+        {
+            "role": "system",
+            "content": "You are near-chan an AI assistant for NEAR blockchain. give short and concise answers to user queries like a human. be friendly and helpful."
+        }
+    ]
 
-    prompt = {"role": "system", "content": "You are near-chan an AI assistant for NEAR blockchain. give short and concise answers to user queries like a human. be friendly and helpful."}
     response = env.completions_and_run_tools([prompt] + env.list_messages(), tools=tool_registry.get_all_tool_definitions())
 
 
