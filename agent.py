@@ -79,7 +79,7 @@ def run(env: Environment):
         }
     ]
 
-    response = env.completions_and_run_tools([prompt] + env.list_messages(), tools=tool_registry.get_all_tool_definitions())
+    response = env.completions_and_run_tools(prompt + env.list_messages(), tools=tool_registry.get_all_tool_definitions())
 
 
 
